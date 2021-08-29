@@ -1027,6 +1027,7 @@ C ----------------------------------------------------------------------
 	  
       integer							:: err
 	  integer 							:: meas_flg
+	  
 	  logical,intent(in)                :: iflag		        ! Logische Variable: beim 1. Aufrufen der GForce ist
 										                        ! iflag = 1, danach iflag = 0
 	  integer, save 					:: hilfs_iflag 			! Die Erstellung der hilfs_iflag Variable ist notwendig um einmalige Aktionen auszuführen
@@ -1526,7 +1527,7 @@ C ----------------------------------------------------------------------
 	! bei der Winkelposition des  Wälzkörpers (theta_wk)
 	AR_LFB_delta_ax_flex = ispline(theta_wk, theta, delta_ax, b_ax, c_ax, d_ax, 3*no_nodes)
 
-	  write(1,*) id, '#####################'
+	  write(1,*) id, 'XXX'
 	  write(1,'(1001f18.8)') theta
 	  write(1,'(1001f18.8)') AR_LFB_delta_rad_flex
       write(1,'(1001f18.8)') AR_LFB_delta_ax_flex
@@ -1547,7 +1548,7 @@ C ----------------------------------------------------------------------
 
 	  call WK_LB_Kontakt_AR(id, time, ctloc, no_slce_LB,							 
      &					tdisp_wk_ar_gr, tdisp_wk_wka_gr, distnce(1:no_slce_LB),					 
-     &						prorad_AR,  wk_prorad(1:no_slce_LB), wk_pro_rad,	AR_breite,	 
+     &						prorad_AR, wk_prorad(1:no_slce_LB), wk_pro_rad, AR_breite,	 
      &						    AR_LFB_delta_rad_flex, AR_LFB_delta_ax_flex,        
      &							penetrtn, ctnorm, ctpoint, ctpoint_glob)             !"ctpoint_glob" needs defintions!
 
@@ -1557,7 +1558,7 @@ C ----------------------------------------------------------------------
 	!call KippSchr(time, id, iflag, int(par(3)),int(par(2)),int(par(5)),tdisp325,			&
 	!					beta_schr, gamma_kipp)
 
-	  call WK_LB_Kontakt_IR(id, iflag, dflag, time, ctloc, no_slce_LB, #DirCos52, DirCos53, tdisp322,# 	
+	  call WK_LB_Kontakt_IR(id, iflag, dflag, time, ctloc, no_slce_LB, #DirCos52, DirCos53, tdisp322,	
      &					tdisp_wk_ir_gr, tdisp_wk_wka_gr, tdisp_wk_wka_ir, distnce(1:no_slce_LB), rad_IR,                        
      &						prorad_IR,  wk_prorad(1:no_slce_LB), wk_pro_rad, dWKpro_dEta(1:no_slce_LB),          
      &							penetrtn, ctnorm, ctpoint, ctpoint_glob)
