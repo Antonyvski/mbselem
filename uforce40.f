@@ -1541,7 +1541,7 @@ C ----------------------------------------------------------------------
 ! Durchdringung, Kontaktnormale und Kontaktpunkt
 ! Wälzkörper - Außenring
       if(ctloc == 1) then
-	! Berechung des Kipp-/Schr�?�nkwinkels des WK zur LB
+	! Berechung des Kipp-/Schräglaufwinkels des WK zur LB
 	!call KippSchr(time, id, iflag, int(par(3)),int(par(1)),int(par(5)),tdisp315 ,			&
 	!					beta_schr, gamma_kipp)
 
@@ -1553,7 +1553,7 @@ C ----------------------------------------------------------------------
 
 ! Wälzkörper - Innenring
       elseif(ctloc == 2) then
-	! Berechung des Kipp-/Schr�?�nkwinkels des WK zur LBKon
+	! Berechung des Kipp-/Schräglaufwinkels des WK zur LBKon
 	!call KippSchr(time, id, iflag, int(par(3)),int(par(2)),int(par(5)),tdisp325,			&
 	!					beta_schr, gamma_kipp)
 
