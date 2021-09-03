@@ -348,7 +348,7 @@ C ----------------------------------------------------------------------
 		 
 		 !WK Profilierung
 		 par_name(16) = 'Profil Type                   '  ;  par_type(16) = knr_double     	;  par_unit(16) = knodef
-		 par_name(17) = 'WK-Profil-Radius               '  ;  par_type(17) = knr_double     	;  par_unit(17) = knodef
+		 par_name(17) = 'WK-Profil-Radius              '  ;  par_type(17) = knr_double     	;  par_unit(17) = knodef
 		 par_name(18) = 'WKpro-ap                      '  ;  par_type(18) = knr_double     	;  par_unit(18) = knodef
 		 par_name(19) = 'WKpro-cp                      '  ;  par_type(19) = knr_double     	;  par_unit(19) = knodef
 		 par_name(20) = 'WKpro-dp                      '  ;  par_type(20) = knr_double     	;  par_unit(20) = knodef
@@ -785,6 +785,7 @@ C ----------------------------------------------------------------------
 	  integer                     :: beartype, no_bear, no_wk, no_slce, no_gauss, mid_slce, mid_gauss
 	  integer                     :: no_cellx, no_celly
 	  integer                     :: contactmod
+	  integer                     :: ctctype_LB
 
 	  real(kind=8)                :: v_e_mod(4), INV_M_TRANS_DIR_mod(4,4)
 
@@ -1018,6 +1019,7 @@ C ----------------------------------------------------------------------
 		
 		real(kind=8)                :: ar_lfb_rad, ir_lfb_rad
 		real(kind=8),allocatable    :: p_slce(:), b_slce(:), h0(:)
+		real(kind=8)                :: ctpoint_glob(int(no_slce_LB),3)  !new from ADAMS
 	 !------------------------------------------------------------------
 	 !notwendige Variablen zur automatisierten Ausgabe
 	 !------------------------------------------------------------------
@@ -1027,9 +1029,10 @@ C ----------------------------------------------------------------------
 	  
       integer							:: err
 	  integer 							:: meas_flg
-	  
-	  logical,intent(in)                :: iflag		        ! Logische Variable: beim 1. Aufrufen der GForce ist
+
+	  logical                           :: iflag 	            ! Logische Variable: beim 1. Aufrufen der GForce ist
 										                        ! iflag = 1, danach iflag = 0
+
 	  integer, save 					:: hilfs_iflag 			! Die Erstellung der hilfs_iflag Variable ist notwendig um einmalige Aktionen auszuführen
 	  data hilfs_iflag/1/ 					    				! Ein data-statement wird nur einmalig ausgeführt
 		
@@ -1127,7 +1130,7 @@ C ----------------------------------------------------------------------
 	 
 	  !für Modul calc_wkpro-----------------------------------------------
 
-	  !tk_rad=		(par(14))/2.0d0		
+	  	
 	  wk_l=			(par(14))
 	  wk_rad=		(par(15))		
 	  				  
@@ -1264,7 +1267,8 @@ C ----------------------------------------------------------------------
 		!elseif (ctloc == 3 .OR. ctloc == 4)	then
 		!	id_lb			= int(par(90))
 		endif
-	 
+
+		iflag = 0 
 	 
 	 
 C ----------------------------------------------------------------------
@@ -1358,6 +1362,7 @@ C ----------------------------------------------------------------------
 	
 	! Richtungskosinus zw. ground.Centre und InnerRace.Centre
 	call SPCK_AV_ANGLE( angles_gr_ir, id_gr, id_ir, 3, error)
+	
 	! Erstellen der Rotationsmatrizen
 	call SPCK_UF_Angle2TrMat( matTr_gr_ir, 3, angles_gr_ir, error)
     
@@ -1373,6 +1378,7 @@ C ----------------------------------------------------------------------
 	call SPCK_AV_VXYZ( v_abs, v_ptp, tvel_wk_gr_gr, id_wk, id_gr, id_gr, id_gr, ierr)
 	! Richtungskosinus zw. RB.Centre und InnerRace.Centre
 	call SPCK_AV_ANGLE( angles_gr_wk, id_gr, id_wk, 3, error)
+	
 	! Erstellen der Rotationsmatrizen
 	call SPCK_UF_Angle2TrMat( matTr_gr_wk, 3, angles_gr_wk, error) 
 	
@@ -1430,8 +1436,12 @@ C ----------------------------------------------------------------------
      &							wk_dpro_deta(1:no_slce_LB))
 	
 	endif
-                        !wk_protype to wk_protype
 
+	!!!Test, ob Ausgabe von der Funktion richtig gerechnet wurden. 
+	open(1047,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_prorad.out')
+	write(1047,*) wk_prorad(:)        
+	open(1048,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_dpro_deta.out')
+	write(1048,*) wk_dpro_deta(:)         
 
 !---------------------------------------------------------------------------------------------
 !------------------- Reduzierter Elastizitätsmodul und reduzierter Radius --------------------
@@ -1508,31 +1518,33 @@ C ----------------------------------------------------------------------
 		endif
 	endif
 
-	!open(1047,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\ .out')
-	!write(1047,*)  	
-
-
+	open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\R_dash_WKIR.out')
+	write(1049,*) R_dash_WKIR(:)  
+		
+    
+	
 !###new from WK_LB_Gfosub###
 
 ! Winkelstellung des  Wälzkörpers
-      theta_wk = atan2d(tdisp_wk(1),tdisp_wk(2))
+    ! theta_wk = atan2d(tdisp_wk(1),tdisp_wk(2))
     ! Umrechnen auf Bereich 0-360�?�
-      theta_wk = mod(theta_wk+720.0,360.0)
+    ! theta_wk = mod(theta_wk+720.0,360.0)
 
     ! Berechnen der Laufbahnradius�?�nderung bei der Winkelposition
     ! des  Wälzkörpers (theta_wk)
-	AR_LFB_delta_rad_flex = ispline(theta_wk, theta, rad, b_rad, c_rad, d_rad, 3*no_nodes) - 499.4959125
+	!AR_LFB_delta_rad_flex = ispline(theta_wk, theta, rad, b_rad, c_rad, d_rad, 3*no_nodes) - 499.4959125
 
 	! Berechnen der Laufbahnverformung in axiale Richtung
 	! bei der Winkelposition des  Wälzkörpers (theta_wk)
-	AR_LFB_delta_ax_flex = ispline(theta_wk, theta, delta_ax, b_ax, c_ax, d_ax, 3*no_nodes)
+	!AR_LFB_delta_ax_flex = ispline(theta_wk, theta, delta_ax, b_ax, c_ax, d_ax, 3*no_nodes)
 
-	  write(1,*) id, 'XXX'
-	  write(1,'(1001f18.8)') theta
-	  write(1,'(1001f18.8)') AR_LFB_delta_rad_flex
-      write(1,'(1001f18.8)') AR_LFB_delta_ax_flex
-
-
+	  !write(1,*) id, 'XXX'
+	  !write(1,'(1001f18.8)') theta
+	  !write(1,'(1001f18.8)') AR_LFB_delta_rad_flex
+      !write(1,'(1001f18.8)') AR_LFB_delta_ax_flex
+    
+      AR_LFB_delta_rad_flex = 0.0d0
+      AR_LFB_delta_ax_flex  = 0.0d0
 
 
 !---------------------------------------------------------------------------------------------
@@ -1541,28 +1553,29 @@ C ----------------------------------------------------------------------
 
 ! Durchdringung, Kontaktnormale und Kontaktpunkt
 ! Wälzkörper - Außenring
-      if(ctloc == 1) then
-	! Berechung des Kipp-/Schräglaufwinkels des WK zur LB
-	!call KippSchr(time, id, iflag, int(par(3)),int(par(1)),int(par(5)),tdisp315 ,			&
-	!					beta_schr, gamma_kipp)
+      !if(ctloc == 1) then
+		! Berechung des Kipp-/Schräglaufwinkels des WK zur LB
+		!call KippSchr(time, id, iflag, int(par(3)),int(par(1)),int(par(5)),tdisp315 ,			&
+		!					beta_schr, gamma_kipp)
+	
+		  !call WK_LB_Kontakt_AR(id, time, ctloc, no_slce_LB,							 
+		 !&					tdisp_wk_ar_gr, tdisp_wk_wka_gr, distnce(1:no_slce_LB),					 
+		 !&						prorad_AR, wk_prorad(1:no_slce_LB), wk_pro_rad, AR_breite,	 
+		 !&						    AR_LFB_delta_rad_flex, AR_LFB_delta_ax_flex,        
+		 !&							penetrtn, ctnorm, ctpoint, ctpoint_glob)             
+	
+	! Wälzkörper - Innenring
+		  !elseif(ctloc == 2) then
+		! Berechung des Kipp-/Schräglaufwinkels des WK zur LBKon
+		!call KippSchr(time, id, iflag, int(par(3)),int(par(2)),int(par(5)),tdisp325,			&
+		!					beta_schr, gamma_kipp)
+	
+		  !call WK_LB_Kontakt_IR(id, iflag, dflag, time, ctloc, no_slce_LB, angles_wk_ir, angles_gr_wk, tdisp_wk_ir_ir,	
+		 !&					tdisp_wk_ir_gr, tdisp_wk_wka_gr, tdisp_wk_wka_ir, distnce(1:no_slce_LB), rad_IR,                        
+		 !&						prorad_IR,  wk_prorad(1:no_slce_LB), wk_pro_rad, wk_dpro_deta(1:no_slce_LB),          
+		 !&							penetrtn, ctnorm, ctpoint, ctpoint_glob)
+		  !endif
 
-	  call WK_LB_Kontakt_AR(id, time, ctloc, no_slce_LB,							 
-     &					tdisp_wk_ar_gr, tdisp_wk_wka_gr, distnce(1:no_slce_LB),					 
-     &						prorad_AR, wk_prorad(1:no_slce_LB), wk_pro_rad, AR_breite,	 
-     &						    AR_LFB_delta_rad_flex, AR_LFB_delta_ax_flex,        
-     &							penetrtn, ctnorm, ctpoint, ctpoint_glob)             !"ctpoint_glob" needs defintions!
-
-! Wälzkörper - Innenring
-      elseif(ctloc == 2) then
-	! Berechung des Kipp-/Schräglaufwinkels des WK zur LBKon
-	!call KippSchr(time, id, iflag, int(par(3)),int(par(2)),int(par(5)),tdisp325,			&
-	!					beta_schr, gamma_kipp)
-
-	  call WK_LB_Kontakt_IR(id, iflag, dflag, time, ctloc, no_slce_LB, #DirCos52, DirCos53, tdisp322,	
-     &					tdisp_wk_ir_gr, tdisp_wk_wka_gr, tdisp_wk_wka_ir, distnce(1:no_slce_LB), rad_IR,                        
-     &						prorad_IR,  wk_prorad(1:no_slce_LB), wk_pro_rad, dWKpro_dEta(1:no_slce_LB),          
-     &							penetrtn, ctnorm, ctpoint, ctpoint_glob)
-      endif
 
 C ----------------------------------------------------------------------
 C task = 0 : Determine force, torque and output values
@@ -1767,7 +1780,9 @@ C ----------------------------------------------------------------------
 			
 			
 					! Festlegen/Erstellen des Ausgabeordners
-				
+
+						
+
 ! *****************************************************************
 ! *** Automatische PFADANGABE
 ! *****************************************************************
