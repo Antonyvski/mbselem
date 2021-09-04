@@ -1437,9 +1437,12 @@ C ----------------------------------------------------------------------
 	
 	endif
 
+    !##check point 
 	!!!Test, ob Ausgabe von der Funktion richtig gerechnet wurden. 
 	open(1047,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_prorad.out')
-	write(1047,*) wk_prorad(:)        
+	write(1047,*) wk_prorad(:)  
+	open(1048,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_dpro_deta.out')
+	write(1048,*) wk_dpro_deta(:)        
 	 
 
 !---------------------------------------------------------------------------------------------
