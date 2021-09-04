@@ -1480,7 +1480,10 @@ C ----------------------------------------------------------------------
 				sum_rho_WKAR(1:no_slce_LB) = rho1x_WKAR(1:no_slce_LB)           ! Wälzkörper-Ebene Kontakt
 			endif
 			R_dash_WKAR(1:no_slce_LB) = 1.0d0/sum_rho_WKAR(1:no_slce_LB)
-	
+    
+			!##checke point
+	open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\R_dash_WKAR.out')
+	write(1049,*) R_dash_WKAR(:)  
 	
 		! WK-IR-Kontakt
 		elseif(ctloc == 2) then
@@ -1516,11 +1519,12 @@ C ----------------------------------------------------------------------
 	
 		endif
 	endif
-
-	open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\R_dash_WKIR.out')
-	write(1049,*) R_dash_WKIR(:)  
-	open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\R_dash_WKIR.out')
-	write(1049,*) R_dash_WKIR(:)  	
+	
+    !##check point
+	open(1050,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\R_dash_WKIR.out')
+	write(1050,*) R_dash_WKIR(:)  
+	
+		
     
 	
 !###new from WK_LB_Gfosub###
@@ -1545,7 +1549,7 @@ C ----------------------------------------------------------------------
     
       AR_LFB_delta_rad_flex = 0.0d0
       AR_LFB_delta_ax_flex  = 0.0d0
-
+ 
 
 !---------------------------------------------------------------------------------------------
 !-------------------------------------- Kontakterkennung -------------------------------------
