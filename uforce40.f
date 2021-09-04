@@ -1481,7 +1481,7 @@ C ----------------------------------------------------------------------
 			endif
 			R_dash_WKAR(1:no_slce_LB) = 1.0d0/sum_rho_WKAR(1:no_slce_LB)
     
-			!##checke point
+	!##check point
 	open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\R_dash_WKAR.out')
 	write(1049,*) R_dash_WKAR(:)  
 	
@@ -1519,7 +1519,7 @@ C ----------------------------------------------------------------------
 	
 		endif
 	endif
-	
+
     !##check point
 	open(1050,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\R_dash_WKIR.out')
 	write(1050,*) R_dash_WKIR(:)  
