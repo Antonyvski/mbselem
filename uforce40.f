@@ -333,11 +333,11 @@ C ----------------------------------------------------------------------
 		 		 
 		 ! ##### Geometrie Parameter (Außenring/Innenring) #####
 		 par_name( 7) = 'AR Profilradius               '  ;  par_type( 7) = knr_double     	;  par_unit( 7) = knodef
-		  !par_name( 8) = 'AR Laufbahnradius             '  ;  par_type( 8) = knr_double     	;  par_unit( 8) = knodef
+		 par_name( 8) = 'AR Laufbahnradius             '  ;  par_type( 8) = knr_double     	;  par_unit( 8) = knodef
          par_name( 9) = 'AR Breite                     '  ;  par_type( 9) = knr_double     	;  par_unit( 9) = knodef
 		 par_name(10) = 'AR Dicke                      '  ;  par_type(10) = knr_double     	;  par_unit(10) = knodef
 		 par_name(11) = 'IR Profilradius               '  ;  par_type(11) = knr_double     	;  par_unit(11) = knodef
-		  !par_name(12) = 'IR Laufbahnradius             '  ;  par_type(12) = knr_double     	;  par_unit(12) = knodef
+		 par_name(12) = 'IR Laufbahnradius             '  ;  par_type(12) = knr_double     	;  par_unit(12) = knodef
 		 par_name(13) = 'IR Breite                     '  ;  par_type(13) = knr_double     	;  par_unit(13) = knodef
 		 
 		 ! ##### Geometrie Parameter Wälzkörper ##### 
@@ -761,7 +761,7 @@ C Declaration of Local Variables
 C ----------------------------------------------------------------------
 	
 	  !Aufbau der Vektoren und Felder wie sie in ADAMS verwendet werden
-	  real, dimension (10) 				  :: par_Kon		   !benötigte Parameter aus übergabeliste für Kontaktmodul
+	  real, dimension (10) 				  :: par_Kon		           !benötigte Parameter aus übergabeliste für Kontaktmodul
 	  integer                             :: i
 	  integer                             :: bear_nr, wk_nr, ctloc, ct_mod 
 	  integer 							  :: error
@@ -827,7 +827,7 @@ C ----------------------------------------------------------------------
 	  real(kind=8)				  :: rvel_wk_ar_dr(3), rvel_ar_gr_gr(3), rvel_wk_ir_gr(3), rvel_ir_gr_gr(3), rvel_wk_gr_gr(3)
 	  real(kind=8)	              :: vtrans_LB_gr(3), vtrans_WK_LB(3), vtrans_WK_gr(3)
 	  !real(kind=8)	              :: vtrans_WK_gr(no_slce,3)
-	  !real(kind=8)         	  :: 
+	   
 	  real(kind=8)                :: v_abs, v_ptp, w_abs
 	  ! WK-LW-Dämpfung
 	  real(kind=8)				  :: WK_achse(3)
@@ -847,12 +847,13 @@ C ----------------------------------------------------------------------
       ! Geometrie des Außen- und Innenrings
 	  real(kind=8)                :: rad_AR, prorad_AR, AR_breite, AR_dicke
 	  real(kind=8)                :: rad_IR, prorad_IR, IR_breite
-      real(kind=8)                :: AR_MANTEL_DRM
+      !!real(kind=8)                :: AR_MANTEL_DRM
 	  ! Geometrie des Bordes (benötigt für Bordkontakte // sind im Angebot nicht enthalten)
 
 	  ! Geometrie des Wälzkörpers
 	  integer                     :: wk_protype
-	  real(kind=8)                :: wk_rad, wk_l
+	  real(kind=8)                :: wk_rad
+	  real(kind=8)                :: wk_l
 	  real(kind=8)                :: wk_pro_rad
 	  real(kind=8)                :: wk_pro_ap, wk_pro_cp, wk_pro_dp, wk_pro_kp, wk_pro_rk
 	  real(kind=8),allocatable    :: wk_prorad(:), wk_dpro_deta(:), distnce(:)
@@ -868,6 +869,7 @@ C ----------------------------------------------------------------------
 	  real(kind=8)                :: ar_youngs, ar_poisson, ir_youngs, ir_poisson, wk_youngs, wk_poisson, kf_youngs, kf_poisson
 	  real(kind=8)                :: mat_c_WKAR, mat_c_WKIR
 	  real(kind=8)                :: E_dash_WKAR,E_dash_WKIR
+
       ! Werkstoffdaten des Außen- und Innenrings und des Wälzkörpers
       real(kind=8)                :: IR_E, IR_v, AR_E, AR_v, WK_E, WK_v
 	  !----------------------------------------------------------------------------------
@@ -891,7 +893,6 @@ C ----------------------------------------------------------------------
 	  ! Dämpfungseigenschaften
 	  integer                     :: d_mod
 	  real(kind=8)                :: d_max, p_t
-
 	  integer                     :: d_mod_kf
 	  real(kind=8)                :: d_max_kf, p_t_kf
 	  real(kind=8)				  :: K0, KR, KL, KE, Keta, Kalpha, Kq, Ku, Kf, fe
@@ -921,6 +922,7 @@ C ----------------------------------------------------------------------
      	  
       real(kind=8) 		:: IR_LFB_breite, Bord_dicke_IR
       real(kind=8) 		:: IR_Bord_D, IR_Bord_AD, IR_Bord_ID
+
       real(kind=8) 		:: bord_w_ar, bord_w_ir,bord_oeffnungswinkel_AR,bord_oeffnungswinkel_IR
       real(kind=8) 		:: rad_teilkreis
       
@@ -942,12 +944,12 @@ C ----------------------------------------------------------------------
       real(kind=8) 		:: y, h, r, chord_l_a,d,chord_l_i
       real(kind=8) 		:: temp1_brd, temp1a_brd
       real(kind=8) 		:: temp33_brd(3,3)
-	  real(kind=8)      :: mat_WK, mat_AR 
+	  real(kind=8)      :: mat_WK, mat_AR, mat_IR
 	  real(kind=8)      :: rho1x_WKAR(n_max), rho2x_WKAR, rho1y_WKAR, rho2y_WKAR
 	  real(kind=8)      :: rhox_WKAR(n_max), rhoy_WKAR
-      real(kind=8)      :: mat_IR
       real(kind=8)      :: rho1x_WKIR(n_max), rho2x_WKIR, rho1y_WKIR, rho2y_WKIR
       real(kind=8)      :: rhox_WKIR(n_max), rhoy_WKIR   
+
 	  ! ##### Auslesefelder aus Simpack #####
       real(kind=8) 		:: temptdisp_brd
       real(kind=8) 		:: tdisp_wk_wka_wk_brd(3), tdisp_ar_ar a_ar_brd(3)
@@ -1017,7 +1019,7 @@ C ----------------------------------------------------------------------
         real(kind=8)        :: TForceSum(3)
         real(kind=8)        :: TMomentSum(3)
 		
-		real(kind=8)                :: ar_lfb_rad, ir_lfb_rad
+		!real(kind=8)                :: rad_AR, rad_IR
 		real(kind=8),allocatable    :: p_slce(:), b_slce(:), h0(:)
 		real(kind=8)                :: ctpoint_glob(int(no_slce_LB),3)  !new from ADAMS
 	 !------------------------------------------------------------------
@@ -1107,7 +1109,7 @@ C ----------------------------------------------------------------------
 	  
 	  
 	  !Belegen der globalen Parameter
-	  beartype=40				!40 - Penderollenlager
+	  beartype=40				!!!40 - Penderollenlager
 	  no_bear=1
 	  no_wk=1						
 	  
@@ -1116,17 +1118,20 @@ C ----------------------------------------------------------------------
 	! par(6) Kontaktlocation     ctloc = 1 Kontakt Außenring // 
 								!ctloc = 2 Kontakt Innenring// 
 								!ctloc = 4 Kontakt Bord //
-								!ctloc = 5 Taschenfederkäfig
+							
 		
 	  !Geometriedaten------------------------------------------------------
+	  !##Außen-Ring Innen-Ring##
 	  prorad_AR = (par(7))			
-	  rad_AR = (par(8))
+	  rad_AR = (par(8))                    !rad-AR heißt eigentlich "lfb_rad_AR" 
 	  AR_breite = (par(9))
 	  AR_dicke = (par(10)) 
+
 	  prorad_IR = (par(11)) 
-	  rad_IR = (par(12)) 
+	  rad_IR = (par(12))                   !rad-IR heißt eigentlich "lfb_rad_IR" 
 	  IR_breite= (par(13)) 
-	  AR_MANTEL_DRM=(par(85))
+
+	  !AR_MANTEL_DRM=(par(85))
 	 
 	  !für Modul calc_wkpro-----------------------------------------------
 
@@ -1144,18 +1149,18 @@ C ----------------------------------------------------------------------
 	  wk_pro_kp=	(par(21))			
 	  wk_pro_rk=	(par(22))			
 	  
-	  ir_lfb_rad=(par(14))/2.0d0-((par(15))/2.0d0)*cosd(par(17))	
-	  ar_lfb_rad=(par(14))/2.0d0+((par(15))/2.0d0)*cosd(par(17))	
+	  !!! rad_IR=(par(14))/2.0d0-((par(15))/2.0d0)*cosd(par(17))	???sind diese 2 Definitionen richtig???
+	  !!! rad_AR=(par(14))/2.0d0+((par(15))/2.0d0)*cosd(par(17))	
 
 	  !für Modul calc_data-----------------------------------------------	  
-	  ir_youngs=	(par(23))
-	  ir_poisson=	(par(24))
+	  ir_youngs=	(par(23))   !IR_E
+	  ir_poisson=	(par(24))   !IR_V
 	  
-	  ar_youngs=	(par(25))
-	  ar_poisson=	(par(26))
-
-	  wk_youngs=	(par(27))
-	  wk_poisson=	(par(28))
+	  ar_youngs=	(par(25))   !AR_E
+	  ar_poisson=	(par(26))   !AR_V
+  
+	  wk_youngs=	(par(27))   !WK_E
+	  wk_poisson=	(par(28))   !WK_V
 	  
 
 	  
@@ -1170,17 +1175,17 @@ C ----------------------------------------------------------------------
 	  frctnEHD_mod 	= int(par(30))     		! EHD-Reibung:  
 											! 0 - aus
 											! 1 - an (mit Festkörperreibung aus race_f_mod und Hysteresereibung
-	  !lub_mod 		= int(par(34))   		! Schmierstoffbeschreibung:	
+	  !lub_mod 		= int(par())   		! Schmierstoffbeschreibung:	
 											! 1 - FVA 400
 											! 2 - Teutsch
-	  !tau_mod 		= int(par(35)) 			! Modell zur Berechnung der Schubspannung im Schmierstoff
+	  !tau_mod 		= int(par()) 			! Modell zur Berechnung der Schubspannung im Schmierstoff
 											! 1 - Ree-Eyring-Modell (maximale Schubspannung unbegrenzt)
 											! 2 - Bair-Winer-Modell (Schubspannung begrenzt)
 											! 3 - Modell nach Fassbender (ohne Gleitanteil)
 	  filmT_mod 	= int(par(31)) 			! Modell für thermischen Korrekturfaktor
 											! 1 - Modell nach Murch und Wilson (bei geringem Gleitanteil)
 											! 2 - Modell nach Zhu und Cheng (mit/ohne Gleitanteil)
-	  comprT_mod	= int(par(37))    		! Modell zur Berücksichtigung der Schmierstofferw?rmung aufgrund von Kompression
+	  comprT_mod	= int(par(32))    		! Modell zur Berücksichtigung der Schmierstofferw?rmung aufgrund von Kompression
 											! 1 - Modell nach Gold
 											! 2 - Modell nach Dicke				
 	  vel_s   		= (par(33)) 			! Schlupfgeschwindigkeit bei mu_s
@@ -1236,7 +1241,7 @@ C ----------------------------------------------------------------------
 	 fe				= (par(79))				! Dämpfungsparameter nach Dietl [-]	 
 
 	 !num. Parameter für Kontakt---------------------------------------------	
-	 ct_mod   		= int(par(81))		!Kontaktberechnungsmethode
+	 ct_mod   		= int(par(81))		!Kontaktberechnungsmethode  ##Kontakte Type Laufbahn##
 										!Kontaktmodell für WK-LB-Kontakt
 										!1: Scheibenmodell AST basierend auf Trippschen Formeln (gegenseitige Beeinflussung der Scheiben, h鯿hste Genauigkeit)
 										!2: Scheibenmodell Tripp approximiert (ohne gegenseitige Beeinflussung der Scheiben)
@@ -1248,7 +1253,8 @@ C ----------------------------------------------------------------------
 	 
 	
 	!PWI !eventuell später nochmals anpassen
-	 ar_dicke		=	(AR_MANTEL_DRM/2.0d0-(par(14))/2.0d0-(par(15))/2.0d0)*10.0d0	!Faktor 10 für numerische Stabilit?t bei Losrollen der WK
+	 !ar_dicke		=	(AR_MANTEL_DRM/2.0d0-(par(14))/2.0d0-(par(15))/2.0d0)*10.0d0	
+	 !Faktor 10 für numerische Stabilit?t bei Losrollen der WK
 	 
 	 !durch call werden die MARKER IDS im Feld par_Kon als Pointer übergeben und damit der INTEGER des Pointers gespeichert
 	 ct_id = ctloc + 2*(wk_nr-1) + 2*no_wk*(bear_nr-1)
@@ -1344,17 +1350,17 @@ C ----------------------------------------------------------------------
 	
 ! Kontakt WK-Innenring	
 	! Position RB.Centre bzgl. OuterRace.Centre im KOS InnerRace.Centre
-	call SPCK_AV_DXYZ( temptdisp, tdisp_wk_ir_ir, id_wk, id_ir, id_ir, error)
+	call SPCK_AV_DXYZ( temptdisp, tdisp_wk_ir_ir, id_wk, id_ir, id_ir, error)                 !tdisp322
 	
 	! Position, translatorische und rotatorische Geschwingigkeit von
 	! RB.Centre bzgl. InnerRace.Centre im KOS ground.Centre
-	call SPCK_AV_DXYZ( temptdisp, tdisp_wk_ir_gr, id_wk, id_ir, id_gr, error)
-	call SPCK_AV_VXYZ( v_abs, v_ptp, tvel_wk_ir_gr, id_wk, id_ir, id_gr, id_gr, ierr)
-	call SPCK_AV_WXYZ( w_abs, rvel_wk_ir_gr, id_wk, id_ir, id_gr, ierr)
+	call SPCK_AV_DXYZ( temptdisp, tdisp_wk_ir_gr, id_wk, id_ir, id_gr, error)                  !tdisp325
+	call SPCK_AV_VXYZ( v_abs, v_ptp, tvel_wk_ir_gr, id_wk, id_ir, id_gr, id_gr, ierr)          !tvel325
+	call SPCK_AV_WXYZ( w_abs, rvel_wk_ir_gr, id_wk, id_ir, id_gr, ierr)                        !revl325
 
 	! Rotatorische und tranlatorische Geschwingigkeit von
 	! InnerRace.Centre bzgl. ground.Centre im KOS ground.Centre
-	call SPCK_AV_WXYZ( w_abs, rvel_ir_gr_gr, id_ir, id_gr, id_gr, ierr)
+	call SPCK_AV_WXYZ( w_abs, rvel_ir_gr_gr, id_ir, id_gr, id_gr, ierr)                        
 	call SPCK_AV_VXYZ( v_abs, v_ptp, tvel_ir_gr_gr, id_ir, id_gr, id_gr, id_gr, ierr)
 	
 	! Position von RB.Centre bzgl. RB.Aussen im KOS LB.Centre
@@ -1440,7 +1446,8 @@ C ----------------------------------------------------------------------
     !##check point 
 	!!!Test, ob Ausgabe von der Funktion richtig gerechnet wurden. 
 	open(1047,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_prorad.out')
-	write(1047,*) wk_prorad(:)  
+	write(1047,*) wk_prorad(:)                   !!!soll ähnlich so groß 
+
 	open(1048,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_dpro_deta.out')
 	write(1048,*) wk_dpro_deta(:)        
 	 
@@ -1484,7 +1491,7 @@ C ----------------------------------------------------------------------
 			endif
 			R_dash_WKAR(1:no_slce_LB) = 1.0d0/sum_rho_WKAR(1:no_slce_LB)
     
-	!##check point
+	!##check point##!
 	open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\R_dash_WKAR.out')
 	write(1049,*) R_dash_WKAR(:)  
 	
@@ -1560,28 +1567,29 @@ C ----------------------------------------------------------------------
 
 ! Durchdringung, Kontaktnormale und Kontaktpunkt
 ! Wälzkörper - Außenring
-      !if(ctloc == 1) then
+      if(ctloc == 1) then
 		! Berechung des Kipp-/Schräglaufwinkels des WK zur LB
-		!call KippSchr(time, id, iflag, int(par(3)),int(par(1)),int(par(5)),tdisp315 ,			&
-		!					beta_schr, gamma_kipp)
+		!call KippSchr(time, id, iflag, int(par(3)),int(par(1)),int(par(5)),tdisp_wk_ar_gr ,			
+        ! &							beta_schr, gamma_kipp)
 	
-		  !call WK_LB_Kontakt_AR(id, time, ctloc, no_slce_LB,							 
-		 !&					tdisp_wk_ar_gr, tdisp_wk_wka_gr, distnce(1:no_slce_LB),					 
-		 !&						prorad_AR, wk_prorad(1:no_slce_LB), wk_pro_rad, AR_breite,	 
-		 !&						    AR_LFB_delta_rad_flex, AR_LFB_delta_ax_flex,        
-		 !&							penetrtn, ctnorm, ctpoint, ctpoint_glob)             
+	      call mod_WK_LB_Kontakt_AR_mp_WK_LB_Kontakt_AR(id, time, ctloc, no_slce_LB,							 
+     &					tdisp_wk_ar_gr, tdisp_wk_wka_gr, distnce(1:no_slce_LB),					 
+     &						prorad_AR, wk_prorad(1:no_slce_LB), wk_pro_rad, AR_breite,	 
+     &						    AR_LFB_delta_rad_flex, AR_LFB_delta_ax_flex,        
+     &							penetrtn, ctnorm, ctpoint, ctpoint_glob)             
 	
 	! Wälzkörper - Innenring
-		  !elseif(ctloc == 2) then
+	  elseif(ctloc == 2) then
 		! Berechung des Kipp-/Schräglaufwinkels des WK zur LBKon
-		!call KippSchr(time, id, iflag, int(par(3)),int(par(2)),int(par(5)),tdisp325,			&
-		!					beta_schr, gamma_kipp)
+		!call KippSchr(time, id, iflag, int(par(3)),int(par(2)),int(par(5)),tdisp_wk_ir_gr,			
+        !&					beta_schr, gamma_kipp)
 	
-		  !call WK_LB_Kontakt_IR(id, iflag, dflag, time, ctloc, no_slce_LB, angles_wk_ir, angles_gr_wk, tdisp_wk_ir_ir,	
-		 !&					tdisp_wk_ir_gr, tdisp_wk_wka_gr, tdisp_wk_wka_ir, distnce(1:no_slce_LB), rad_IR,                        
-		 !&						prorad_IR,  wk_prorad(1:no_slce_LB), wk_pro_rad, wk_dpro_deta(1:no_slce_LB),          
-		 !&							penetrtn, ctnorm, ctpoint, ctpoint_glob)
-		  !endif
+	      call mod_WK_LB_Kontakt_IR_mp_WK_LB_Kontakt_IR(id, iflag, dflag,time,
+     &	           ctloc, no_slce_LB, angles_wk_ir, angles_gr_wk, tdisp_wk_ir_ir,	
+     &					tdisp_wk_ir_gr, tdisp_wk_wka_gr, tdisp_wk_wka_ir, distnce(1:no_slce_LB), rad_IR,                        
+     &						prorad_IR,  wk_prorad(1:no_slce_LB), wk_pro_rad, wk_dpro_deta(1:no_slce_LB),          
+     &							penetrtn, ctnorm, ctpoint, ctpoint_glob)
+      endif
 
 
 C ----------------------------------------------------------------------
@@ -1958,9 +1966,9 @@ C ----------------------------------------------------------------------
 				
 				nAR = rdisp155(3)
 				nIR = rdisp255(3)
-				nKF_ideal = (1.0d0-(2.0d0*wk_rad/(ar_lfb_rad+ir_lfb_rad)))*(nIR/2.0d0)+												
-     &                      (1.0d0+(2.0d0*wk_rad/(ar_lfb_rad+ir_lfb_rad)))*(nAR/2.0d0)												! Für KeRoLa anpassen !PWI
-				nWK_ideal = (((ar_lfb_rad+ir_lfb_rad)**2.0d0-4.0d0*wk_rad**2.0d0)/((ar_lfb_rad+ir_lfb_rad)*2.0d0*wk_rad))*((nAR-nIR)/2.0d0) ! Für KeRoLa anpassen !PWI
+				nKF_ideal = (1.0d0-(2.0d0*wk_rad/(rad_AR+rad_IR)))*(nIR/2.0d0)+												
+     &                      (1.0d0+(2.0d0*wk_rad/(rad_AR+rad_IR)))*(nAR/2.0d0)												! Für KeRoLa anpassen !PWI
+				nWK_ideal = (((rad_AR+rad_IR)**2.0d0-4.0d0*wk_rad**2.0d0)/((rad_AR+rad_IR)*2.0d0*wk_rad))*((nAR-nIR)/2.0d0) ! Für KeRoLa anpassen !PWI
 				
 				dateinr = lagernr*100000 + ctloc*10000 + ID_Waelz*100
 			! Erklärung: "einzigartige" Dateinummer über Zusammensetzung aus ctloc und ID_Waelz
