@@ -141,13 +141,7 @@ C ----------------------------------------------------------------------
 !>                - Note that most Access Functions cannot be used in
 !>                  this task.
 !>
-!>  \li  Task  5: Optionally define default parameters
-!>                - Define default values for \a par for type switch and
-!>                  new elements of this type.
-!>                - This task has to be enabled by spck_df_ForceSetupDefault
-!>                  in type subroutine.
-!>                - Note that most Access Functions cannot be used in
-!>                  this task.
+!>  
 !>
 !>  \li  Task  0: Define names and types of parameters, states and output values
 !>                - Parameter names \a par_name
@@ -181,7 +175,7 @@ C ----------------------------------------------------------------------
 !>                - Set internal parameters: spck_ds_ForceAddDbl, spck_ds_ForceAddInt
 !>
 !>  \li  Task  4: Optionally deallocate memory and close files
-!
+!>
 !***********************************************************************
 
       subroutine uforce40_setup( task        !< [in    ] |-1 | 5 | 0 | 1 | 2 | 4 | task flag
@@ -497,6 +491,7 @@ C ---------------------------------------------------------------------
 			ov_name(17) = 'Schmierfilmhoehe [mum]       '   ;  ov_unit(17) = knodef
 			ov_name(18) = 'Durchdringung [mm]           '   ;  ov_unit(18) = knodef
 			ov_name(19) = 'Pressung auf der Laufbahn [MPa]' ;  ov_unit(19) = knodef
+			
 			! PWI Test Borddämpfung
 	    	!ov_name(20) = 'DForce_tvel_brd X            '   ;  ov_unit(20) = kp_force
 	    	!ov_name(21) = 'DForce_tvel_brd Y            '   ;  ov_unit(21) = kp_force
@@ -856,7 +851,7 @@ C ----------------------------------------------------------------------
 	  real(kind=8)                :: wk_l
 	  real(kind=8)                :: wk_pro_rad
 	  real(kind=8)                :: wk_pro_ap, wk_pro_cp, wk_pro_dp, wk_pro_kp, wk_pro_rk
-	  real(kind=8),allocatable    :: wk_prorad(:), wk_dpro_deta(:), distnce(:)
+	  real(kind=8), allocatable   :: wk_prorad(:), wk_dpro_deta(:), distnce(:)
 	  real(kind=8)                :: wk_winkel, lb_winkel, tk_rad, wk_Pos(3)
       
 	  ! Abgeleitete Größen
@@ -1021,7 +1016,7 @@ C ----------------------------------------------------------------------
 		
 		!real(kind=8)                :: rad_AR, rad_IR
 		real(kind=8),allocatable    :: p_slce(:), b_slce(:), h0(:)
-		real(kind=8)                :: ctpoint_glob(int(no_slce_LB),3)  !new from ADAMS
+		real(kind=8)                :: ctpoint_glob(int(no_slce_LB),3)                !new from ADAMS
 	 !------------------------------------------------------------------
 	 !notwendige Variablen zur automatisierten Ausgabe
 	 !------------------------------------------------------------------
@@ -1115,8 +1110,8 @@ C ----------------------------------------------------------------------
 	  
 	  
 	  ctloc	  = int(par(6))						
-	! par(6) Kontaktlocation     ctloc = 1 Kontakt Außenring // 
-								!ctloc = 2 Kontakt Innenring// 
+	! par(6) Kontaktlocation    !ctloc = 1 Kontakt Außenring // 
+								!ctloc = 2 Kontakt Innenring // 
 								!ctloc = 4 Kontakt Bord //
 							
 		
@@ -1277,17 +1272,18 @@ C ----------------------------------------------------------------------
 		iflag = 0 
 	 
 	 
-C ----------------------------------------------------------------------
-C Execution
-C ----------------------------------------------------------------------
+! ----------------------------------------------------------------------
+!                           Execution
+! ----------------------------------------------------------------------
 !-----------------------------------------------------------------------
 !-----------------------------------------------------------------------
-!-------------------------Zustandsgroessen------------------------------
+!-------------------------Zustandsgrößen------------------------------
 !-----------------------------------------------------------------------
 !-----------------------------------------------------------------------
 
-!Kontakt WK-Außenring
-	 ! Position RB.Centre bzgl. OuterRace.Centre im KOS OuterRace.Centre
+!Kontakt WK-Außenring:
+
+	! Position RB.Centre bzgl. OuterRace.Centre im KOS OuterRace.Centre
 	call SPCK_AV_DXYZ( temptdisp, tdisp_wk_ar_ar, id_wk, id_ar, id_ar, error)
 	
 	! Position, translatorische und rotatorische Geschwingigkeit von
@@ -1313,7 +1309,8 @@ C ----------------------------------------------------------------------
 	call SPCK_AV_ANGLE( angles_wk_ar, id_wk, id_ar, 3, error)
 	! Erstellen der Rotationsmatrizen
 	call SPCK_UF_Angle2TrMat( matTr_wk_ar, 3, angles_wk_ar, error)
-	
+
+!!!Ausgabe Werte Überprüfen!!!	
 	open(1020,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_ar_ar.out')
 	write(1020,*) tdisp_wk_ar_ar
 
@@ -1348,9 +1345,10 @@ C ----------------------------------------------------------------------
 	write(1030,*) matTr_wk_ar
 
 	
-! Kontakt WK-Innenring	
+! Kontakt WK-Innenring:
+
 	! Position RB.Centre bzgl. OuterRace.Centre im KOS InnerRace.Centre
-	call SPCK_AV_DXYZ( temptdisp, tdisp_wk_ir_ir, id_wk, id_ir, id_ir, error)                 !tdisp322
+	call SPCK_AV_DXYZ( temptdisp, tdisp_wk_ir_ir, id_wk, id_ir, id_ir, error)                  !tdisp322
 	
 	! Position, translatorische und rotatorische Geschwingigkeit von
 	! RB.Centre bzgl. InnerRace.Centre im KOS ground.Centre
@@ -1384,40 +1382,55 @@ C ----------------------------------------------------------------------
 	call SPCK_AV_VXYZ( v_abs, v_ptp, tvel_wk_gr_gr, id_wk, id_gr, id_gr, id_gr, ierr)
 	! Richtungskosinus zw. RB.Centre und InnerRace.Centre
 	call SPCK_AV_ANGLE( angles_gr_wk, id_gr, id_wk, 3, error)
-	
 	! Erstellen der Rotationsmatrizen
 	call SPCK_UF_Angle2TrMat( matTr_gr_wk, 3, angles_gr_wk, error) 
-	
+
+!!!Ausgabe Werte Überprüfen!!!		
 	open(1031,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_ir_ir.out')
 	write(1031,*) tdisp_wk_ir_ir
+
 	open(1032,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_ir_gr.out')
 	write(1032,*) tdisp_wk_ir_gr
+
 	open(1033,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tvel_wk_ir_gr.out')
 	write(1033,*) tvel_wk_ir_gr
+
 	open(1034,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rvel_wk_ir_gr.out')
 	write(1034,*) rvel_wk_ir_gr
+
 	open(1035,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rvel_ir_gr_gr.out')
 	write(1035,*) rvel_ir_gr_gr
+
 	open(1036,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tvel_ir_gr_gr.out')
 	write(1036,*) tvel_ir_gr_gr
+
 	open(1037,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_wka_ir.out')
 	write(1037,*) tdisp_wk_wka_ir
+
 	open(1038,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\angles_gr_ir.out')
 	write(1038,*) angles_gr_ir
+
 	open(1039,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\matTr_gr_ir.out')
 	write(1039,*) matTr_gr_ir
+
 	open(1040,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\angles_wk_ir.out')
 	write(1040,*) angles_wk_ir
+
 	open(1041,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\matTr_wk_ir.out')
 	write(1041,*) matTr_wk_ir
+
 	open(1042,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_wka_gr.out')
 	write(1042,*) tdisp_wk_wka_gr
+
 	open(1043,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rvel_wk_gr_gr.out')
 	write(1043,*) rvel_wk_gr_gr
+
 	open(1044,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tvel_wk_gr_gr.out')
 	write(1044,*) tvel_wk_gr_gr
+
 	open(1045,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\angles_gr_wk.out')
 	write(1045,*) angles_gr_wk
+
 	open(1046,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\matTr_gr_wk.out')
 	write(1046,*) matTr_gr_wk
 
@@ -1437,7 +1450,7 @@ C ----------------------------------------------------------------------
 	
 		! Wälzkörperprofil: wk_prorad(i) und wk_dpro_deta(i)
 		call mod_ProfileDetect_mp_ProfileDetect(iflag, wk_protype, no_slce_LB,wk_rad,wk_l, wk_pro_rad,
-     &                           distnce(1:no_slce_LB), wk_prorad(1:no_slce_LB),      
+     &                          distnce(1:no_slce_LB), wk_prorad(1:no_slce_LB),      
      &							wk_pro_ap, wk_pro_cp, wk_pro_dp, wk_pro_kp, wk_pro_rk,           
      &							wk_dpro_deta(1:no_slce_LB))
 	
@@ -1446,7 +1459,7 @@ C ----------------------------------------------------------------------
     !##check point 
 	!!!Test, ob Ausgabe von der Funktion richtig gerechnet wurden. 
 	open(1047,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_prorad.out')
-	write(1047,*) wk_prorad(:)                   !!!soll ähnlich so groß 
+	write(1047,*) wk_prorad(:)                                                                    !!!soll ähnlich so groß wie rad_wk
 
 	open(1048,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_dpro_deta.out')
 	write(1048,*) wk_dpro_deta(:)        
