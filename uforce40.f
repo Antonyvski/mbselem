@@ -851,9 +851,9 @@ C ----------------------------------------------------------------------
 	  real(kind=8)                :: wk_l
 	  real(kind=8)                :: wk_pro_rad
 	  real(kind=8)                :: wk_pro_ap, wk_pro_cp, wk_pro_dp, wk_pro_kp, wk_pro_rk
-	  real(kind=8), allocatable   :: wk_prorad(:), wk_dpro_deta(:), distnce(:)
+	  real(kind=8), allocatable   :: wk_prorad(:), wk_dpro_deta(:)
 	  real(kind=8)                :: wk_winkel, lb_winkel, tk_rad, wk_Pos(3)
-      
+	  real(kind=8)                :: distnce(25)                                                        !!!###später muss man ändern .nicht immer 25###!!!
 	  ! Abgeleitete Größen
 	  real(kind=8), allocatable   :: sum_rho_WKAR(:), sum_rho_WKIR(:)
 	  real(kind=8), allocatable   :: R_dash_WKAR(:), R_dash_WKIR(:)
