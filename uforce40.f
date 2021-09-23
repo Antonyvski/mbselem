@@ -315,6 +315,7 @@ C ---------------------Parameter Lists
 C ----------------------------------------------------------------------
 
          ! parameters
+         !         name '123456789012345678901234567890'  |  type                          |  unit type
 		 ! ##### MARKER #####
          par_name( 1) = 'OuterRace_BRF                 '  ;  par_type( 1) = knr_marker     ;  par_unit( 1) = knodef
          par_name( 2) = 'InnerRace_BRF                 '  ;  par_type( 2) = knr_marker     ;  par_unit( 2) = knodef
@@ -1002,7 +1003,7 @@ C ----------------------------------------------------------------------
         real(kind=8)        :: k1_tripp
         real(kind=8)        :: k2_tripp
 
-        real(kind=8)        :: tdisp_wk_lb_gr(3)
+        !real(kind=8)        :: tdisp_wk_lb_gr(3)
 
         real(kind=8)        :: NForceSum(3)
         real(kind=8)        :: NMomentSum(3)
@@ -1223,7 +1224,7 @@ C ----------------------------------------------------------------------
 											! 1 - Modell nach ---
 											! 2 - Modell nach Dietl												
 	 p_t			= (par(68))		 		! Durchdringungstiefe max. für Materiald?mpfung
-	 d_max			= (par(69)) 			! Maximale D?mpfung
+	 d_max			= (par(69)) 			! Maximale Dämpfung
 	 K0				= (par(70))				! Dämpfungsparameter nach Dietl [(kg**-0,04)*(m**0,06)*(s**0,0115)]
 	 KR				= (par(71))				! Dämpfungsparameter nach Dietl [-]
 	 KL				= (par(72))				! Dämpfungsparameter nach Dietl [-]
@@ -1286,14 +1287,12 @@ C ----------------------------------------------------------------------
 	! Position RB.Centre bzgl. OuterRace.Centre im KOS OuterRace.Centre
 	call SPCK_AV_DXYZ( temptdisp, tdisp_wk_ar_ar, id_wk, id_ar, id_ar, error)
 	
-	! Position, translatorische und rotatorische Geschwingigkeit von
-	! RB.Centre bzgl. OuterRace.Centre im KOS ground.Centre
+	! Position, translatorische und rotatorische Geschwingigkeit von RB.Centre bzgl. OuterRace.Centre im KOS ground.Centre
 	call SPCK_AV_DXYZ( temptdisp, tdisp_wk_ar_gr, id_wk, id_ar, id_gr, error)
 	call SPCK_AV_VXYZ( v_abs, v_ptp, tvel_wk_ar_gr, id_wk, id_ar, id_gr, id_gr, ierr)
 	call SPCK_AV_WXYZ( w_abs, rvel_wk_ar_dr, id_wk, id_ar, id_gr, ierr)
 	
-	! Rotatorische und tranlatorische Geschwingigkeit von
-	! OuterRace.Centre bzgl. ground.Centre im KOS ground.Centre
+	! Rotatorische und tranlatorische Geschwingigkeit von OuterRace.Centre bzgl. ground.Centre im KOS ground.Centre
 	call SPCK_AV_WXYZ( w_abs, rvel_ar_gr_gr, id_ar, id_gr, id_gr, ierr)
 	call SPCK_AV_VXYZ( v_abs, v_ptp, tvel_ar_gr_gr, id_ar, id_gr, id_gr, id_gr, ierr)
 	
@@ -1301,9 +1300,9 @@ C ----------------------------------------------------------------------
 	call SPCK_AV_DXYZ( temptdisp, tdisp_wk_wka_ar, id_wk, id_wka, id_ar, error)
 	
 	! Richtungskosinus zw. ground.Centre und OuterRace.Centre
-        call SPCK_AV_ANGLE( angles_gr_ar, id_gr, id_ar, 3, error)
-        ! Erstellen der Rotationsmatrizen
-        call SPCK_UF_Angle2TrMat( matTr_gr_ar, 3, angles_gr_ar, error)
+	call SPCK_AV_ANGLE( angles_gr_ar, id_gr, id_ar, 3, error)
+	! Erstellen der Rotationsmatrizen
+	call SPCK_UF_Angle2TrMat( matTr_gr_ar, 3, angles_gr_ar, error)
 	
 	! Richtungskosinus zw. RB.Centre und OuterRace.Centre
 	call SPCK_AV_ANGLE( angles_wk_ar, id_wk, id_ar, 3, error)
@@ -1350,14 +1349,12 @@ C ----------------------------------------------------------------------
 	! Position RB.Centre bzgl. OuterRace.Centre im KOS InnerRace.Centre
 	call SPCK_AV_DXYZ( temptdisp, tdisp_wk_ir_ir, id_wk, id_ir, id_ir, error)                  !tdisp322
 	
-	! Position, translatorische und rotatorische Geschwingigkeit von
-	! RB.Centre bzgl. InnerRace.Centre im KOS ground.Centre
+	! Position, translatorische und rotatorische Geschwingigkeit von RB.Centre bzgl. InnerRace.Centre im KOS ground.Centre
 	call SPCK_AV_DXYZ( temptdisp, tdisp_wk_ir_gr, id_wk, id_ir, id_gr, error)                  !tdisp325
 	call SPCK_AV_VXYZ( v_abs, v_ptp, tvel_wk_ir_gr, id_wk, id_ir, id_gr, id_gr, ierr)          !tvel325
 	call SPCK_AV_WXYZ( w_abs, rvel_wk_ir_gr, id_wk, id_ir, id_gr, ierr)                        !revl325
 
-	! Rotatorische und tranlatorische Geschwingigkeit von
-	! InnerRace.Centre bzgl. ground.Centre im KOS ground.Centre
+	! Rotatorische und tranlatorische Geschwingigkeit von InnerRace.Centre bzgl. ground.Centre im KOS ground.Centre
 	call SPCK_AV_WXYZ( w_abs, rvel_ir_gr_gr, id_ir, id_gr, id_gr, ierr)                        
 	call SPCK_AV_VXYZ( v_abs, v_ptp, tvel_ir_gr_gr, id_ir, id_gr, id_gr, id_gr, ierr)
 	
@@ -1439,10 +1436,9 @@ C ----------------------------------------------------------------------
 !---------------------------------------------------------------------------------------------
 
 	if(iflag) then
-
+	
 		! Breite einer Scheibe
 		slce_wdth = wk_l/no_slce_LB
-	
 
 		open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\slce_wdth.out')
 		write(1049,*)slce_wdth
@@ -1451,7 +1447,6 @@ C ----------------------------------------------------------------------
 		do i=1,no_slce_LB
 			distnce(i)=slce_wdth*(i-0.5)-wk_l/2
 		enddo
-	
 
 		open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\distnce_ufroce.out')
 		write(1049,*)distnce(:)
@@ -1480,7 +1475,7 @@ C ----------------------------------------------------------------------
 !---------------------------------------------------------------------------------------------
 
 	if(iflag) then
-
+	
 		! WK-AR-Kontakt
 		if(ctloc == 1) then
 	
