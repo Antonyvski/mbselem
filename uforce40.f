@@ -1452,6 +1452,12 @@ C ----------------------------------------------------------------------
 			distnce(i)=slce_wdth*(i-0.5)-wk_l/2
 		enddo
 	
+
+		open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\distnce_ufroce.out')
+		write(1049,*)distnce(:)
+
+		
+
 		! Wälzkörperprofil: wk_prorad(i) und wk_dpro_deta(i)
 		call mod_ProfileDetect_mp_ProfileDetect(iflag, wk_protype, no_slce_LB,wk_rad,wk_l, wk_pro_rad,
      &                          distnce(1:no_slce_LB), wk_prorad(1:no_slce_LB),      
