@@ -1443,6 +1443,10 @@ C ----------------------------------------------------------------------
 		! Breite einer Scheibe
 		slce_wdth = wk_l/no_slce_LB
 	
+
+		open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\slce_wdth.out')
+		write(1049,*)slce_wdth
+
 		! Abstand der Scheibe i vom Wälzkörpermittelpunkt
 		do i=1,no_slce_LB
 			distnce(i)=slce_wdth*(i-0.5)-wk_l/2
