@@ -344,10 +344,10 @@ C ----------------------------------------------------------------------
 		 !WK Profilierung
 		 par_name(16) = 'Profil Type                   '  ;  par_type(16) = knr_double     	;  par_unit(16) = knodef
 		 par_name(17) = 'WK-Profil-Radius              '  ;  par_type(17) = knr_double     	;  par_unit(17) = knodef
-		 par_name(18) = 'WKpro-ap                      '  ;  par_type(18) = knr_double     	;  par_unit(18) = knodef
-		 par_name(19) = 'WKpro-cp                      '  ;  par_type(19) = knr_double     	;  par_unit(19) = knodef
-		 par_name(20) = 'WKpro-dp                      '  ;  par_type(20) = knr_double     	;  par_unit(20) = knodef
-		 par_name(21) = 'WKpro-kp                      '  ;  par_type(21) = knr_double     	;  par_unit(21) = knodef
+		 par_name(18) = 'WKpro-ap nach DIN-ISO         '  ;  par_type(18) = knr_double     	;  par_unit(18) = knodef
+		 par_name(19) = 'WKpro-cp effektive WK-Laenge  '  ;  par_type(19) = knr_double     	;  par_unit(19) = knodef
+		 par_name(20) = 'WKpro-dp Laenge Zylinderstueck   '   ;  par_type(20) = knr_double     	;  par_unit(20) = knodef
+		 par_name(21) = 'WKpro-kp Beginn Geradenstueck    '   ;  par_type(21) = knr_double     	;  par_unit(21) = knodef
 		 par_name(22) = 'WKpro-rk Kantenradius         '  ;  par_type(22) = knr_double     	;  par_unit(22) = knodef
 
 		
@@ -424,7 +424,7 @@ C ----------------------------------------------------------------------
 		 par_name(83) = 'cf_pnts_LB                    '  ;  par_type(83) = knr_double     	;  par_unit(83) = knodef
 		 par_name(84) = 'cf_p_max_LB                   '  ;  par_type(84) = knr_double      ;  par_unit(84) = knodef
 		 par_name(85) = 'no_slce_LB                    '  ;  par_type(85) = knr_double      ;  par_unit(84) = knodef
-         par_name(86) = 'mid_slce                      '  ;  par_type(86) = knr_double      ;  par_unit(86) = knodef
+         !par_name(86) = 'mid_slce                      '  ;  par_type(86) = knr_double      ;  par_unit(86) = knodef
 		 
 
          ! dynamic states
@@ -762,7 +762,7 @@ C ----------------------------------------------------------------------
 	  integer                             :: bear_nr, wk_nr, ctloc, ct_mod 
 	  integer 							  :: error
 
-	  integer                             :: ct_id
+	  !integer                             :: ct_id
 	  real(8) :: temp(2,31,3)
 	  
 	  !-------------------------------------
@@ -854,8 +854,7 @@ C ----------------------------------------------------------------------
 	  real(kind=8)                :: wk_pro_ap, wk_pro_cp, wk_pro_dp, wk_pro_kp, wk_pro_rk
 	  real(kind=8), allocatable   :: wk_prorad(:), wk_dpro_deta(:)
 	  real(kind=8)                :: wk_winkel, lb_winkel, tk_rad, wk_Pos(3)
-	  real(kind=8)                :: distnce(25)                                                        !!!###später muss man ändern .nicht immer 25###!!!
-	  ! Abgeleitete Größen
+	  real(kind=8), allocatable   :: distnce(:)                        
 	  real(kind=8), allocatable   :: sum_rho_WKAR(:), sum_rho_WKIR(:)
 	  real(kind=8), allocatable   :: R_dash_WKAR(:), R_dash_WKIR(:)
 	  
@@ -925,7 +924,7 @@ C ----------------------------------------------------------------------
 	 
 	  ! ##### Vektor mit Parametern für Scheibenmodell, Gauss-Integration #####
       INTEGER, PARAMETER	:: no_slce_Bord = 2
-	  INTEGER, PARAMETER    :: no_slce_LB   = 25    !new 
+	  INTEGER, PARAMETER    :: no_slce_LB   = 31    !new 
 	  ! ##### Variablen Reibung #####
       real(kind=8) 		:: vtang_rel_brd(no_slce_Bord,3), vtang_sum_brd(no_slce_Bord,3)
       INTEGER			:: race_f_mod_brd
@@ -1253,7 +1252,7 @@ C ----------------------------------------------------------------------
 	 !Faktor 10 für numerische Stabilit?t bei Losrollen der WK
 	 
 	 !durch call werden die MARKER IDS im Feld par_Kon als Pointer übergeben und damit der INTEGER des Pointers gespeichert
-	 ct_id = ctloc + 2*(wk_nr-1) + 2*no_wk*(bear_nr-1)
+	 !ct_id = ctloc + 2*(wk_nr-1) + 2*no_wk*(bear_nr-1)
 
 	 ! ##### Marker ID's #####
 	 id_ar   		= int(par(1))    		! Marker ID Aussenring Mitte
@@ -1310,38 +1309,38 @@ C ----------------------------------------------------------------------
 	call SPCK_UF_Angle2TrMat( matTr_wk_ar, 3, angles_wk_ar, error)
 
 !!!Ausgabe Werte Überprüfen!!!	
-	open(1020,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_ar_ar.out')
-	write(1020,*) tdisp_wk_ar_ar
+	! open(1020,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_ar_ar.out')
+	! write(1020,*) tdisp_wk_ar_ar
 
-	open(1021,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_ar_gr.out')
-	write(1021,*) tdisp_wk_ar_gr
+	! open(1021,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_ar_gr.out')
+	! write(1021,*) tdisp_wk_ar_gr
 
-	open(1022,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tvel_wk_ar_gr.out')
-	write(1022,*) tvel_wk_ar_gr
+	! open(1022,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tvel_wk_ar_gr.out')
+	! write(1022,*) tvel_wk_ar_gr
 
-	open(1023,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rvel_wk_ar_dr.out')
-	write(1023,*) rvel_wk_ar_dr
+	! open(1023,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rvel_wk_ar_dr.out')
+	! write(1023,*) rvel_wk_ar_dr
 
-	open(1024,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rvel_ar_gr_gr.out')
-	write(1024,*) rvel_ar_gr_gr 
+	! open(1024,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rvel_ar_gr_gr.out')
+	! write(1024,*) rvel_ar_gr_gr 
 
-	open(1025,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tvel_ar_gr_gr.out')
-	write(1025,*) tvel_ar_gr_gr
+	! open(1025,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tvel_ar_gr_gr.out')
+	! write(1025,*) tvel_ar_gr_gr
 
-	open(1026,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_wka_ar.out')
-	write(1026,*) tdisp_wk_wka_ar
+	! open(1026,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_wka_ar.out')
+	! write(1026,*) tdisp_wk_wka_ar
 
-	open(1027,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\angles_gr_ar.out')
-	write(1027,*) angles_gr_ar
+	! open(1027,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\angles_gr_ar.out')
+	! write(1027,*) angles_gr_ar
 
-	open(1028,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\matTr_gr_ar.out')
-	write(1028,*) matTr_gr_ar
+	! open(1028,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\matTr_gr_ar.out')
+	! write(1028,*) matTr_gr_ar
 
-	open(1029,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\angles_wk_ar.out')
-	write(1029,*) angles_wk_ar
+	! open(1029,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\angles_wk_ar.out')
+	! write(1029,*) angles_wk_ar
 	
-	open(1030,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\matTr_wk_ar.out')
-	write(1030,*) matTr_wk_ar
+	! open(1030,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\matTr_wk_ar.out')
+	! write(1030,*) matTr_wk_ar
 
 	
 ! Kontakt WK-Innenring:
@@ -1383,54 +1382,58 @@ C ----------------------------------------------------------------------
 	call SPCK_UF_Angle2TrMat( matTr_gr_wk, 3, angles_gr_wk, error) 
 
 !!!Ausgabe Werte Überprüfen!!!		
-	open(1031,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_ir_ir.out')
-	write(1031,*) tdisp_wk_ir_ir
+	! open(1031,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_ir_ir.out')
+	! write(1031,*) tdisp_wk_ir_ir
 
-	open(1032,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_ir_gr.out')
-	write(1032,*) tdisp_wk_ir_gr
+	! open(1032,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_ir_gr.out')
+	! write(1032,*) tdisp_wk_ir_gr
 
-	open(1033,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tvel_wk_ir_gr.out')
-	write(1033,*) tvel_wk_ir_gr
+	! open(1033,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tvel_wk_ir_gr.out')
+	! write(1033,*) tvel_wk_ir_gr
 
-	open(1034,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rvel_wk_ir_gr.out')
-	write(1034,*) rvel_wk_ir_gr
+	! open(1034,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rvel_wk_ir_gr.out')
+	! write(1034,*) rvel_wk_ir_gr
 
-	open(1035,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rvel_ir_gr_gr.out')
-	write(1035,*) rvel_ir_gr_gr
+	! open(1035,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rvel_ir_gr_gr.out')
+	! write(1035,*) rvel_ir_gr_gr
 
-	open(1036,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tvel_ir_gr_gr.out')
-	write(1036,*) tvel_ir_gr_gr
+	! open(1036,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tvel_ir_gr_gr.out')
+	! write(1036,*) tvel_ir_gr_gr
 
-	open(1037,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_wka_ir.out')
-	write(1037,*) tdisp_wk_wka_ir
+	! open(1037,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_wka_ir.out')
+	! write(1037,*) tdisp_wk_wka_ir
 
-	open(1038,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\angles_gr_ir.out')
-	write(1038,*) angles_gr_ir
+	! open(1038,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\angles_gr_ir.out')
+	! write(1038,*) angles_gr_ir
 
-	open(1039,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\matTr_gr_ir.out')
-	write(1039,*) matTr_gr_ir
+	! open(1039,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\matTr_gr_ir.out')
+	! write(1039,*) matTr_gr_ir
 
-	open(1040,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\angles_wk_ir.out')
-	write(1040,*) angles_wk_ir
+	! open(1040,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\angles_wk_ir.out')
+	! write(1040,*) angles_wk_ir
 
-	open(1041,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\matTr_wk_ir.out')
-	write(1041,*) matTr_wk_ir
+	! open(1041,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\matTr_wk_ir.out')
+	! write(1041,*) matTr_wk_ir
 
-	open(1042,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_wka_gr.out')
-	write(1042,*) tdisp_wk_wka_gr
+	! open(1042,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tdisp_wk_wka_gr.out')
+	! write(1042,*) tdisp_wk_wka_gr
 
-	open(1043,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rvel_wk_gr_gr.out')
-	write(1043,*) rvel_wk_gr_gr
+	! open(1043,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rvel_wk_gr_gr.out')
+	! write(1043,*) rvel_wk_gr_gr
 
-	open(1044,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tvel_wk_gr_gr.out')
-	write(1044,*) tvel_wk_gr_gr
+	! open(1044,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\tvel_wk_gr_gr.out')
+	! write(1044,*) tvel_wk_gr_gr
 
-	open(1045,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\angles_gr_wk.out')
-	write(1045,*) angles_gr_wk
+	! open(1045,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\angles_gr_wk.out')
+	! write(1045,*) angles_gr_wk
 
-	open(1046,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\matTr_gr_wk.out')
-	write(1046,*) matTr_gr_wk
+	! open(1046,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\matTr_gr_wk.out')
+	! write(1046,*) matTr_gr_wk
 
+
+	if (not(allocated(distnce))) allocate(distnce(no_slce_LB)) !##25,09,2021 hinzufügt
+	 
+	
 !---------------------------------------------------------------------------------------------
 !-------------------------------------- Wälzkörperprofil -------------------------------------
 !---------------------------------------------------------------------------------------------
@@ -1439,7 +1442,7 @@ C ----------------------------------------------------------------------
 	
 		! Breite einer Scheibe
 		slce_wdth = wk_l/no_slce_LB
-
+        
 		open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\slce_wdth.out')
 		write(1049,*)slce_wdth
 
@@ -1448,26 +1451,32 @@ C ----------------------------------------------------------------------
 			distnce(i)=slce_wdth*(i-0.5)-wk_l/2
 		enddo
 
-		open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\distnce_ufroce.out')
-		write(1049,*)distnce(:)
+		open(1050,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\distnce_ufroce.out')
+		write(1050,*)distnce(:)
+        
+		open(1051,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_pro_rk_ufroce.out')
+		write(1051,*)wk_pro_rk
 
-		
+        open(1052,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_protype_ufroce.out')
+		write(1052,*)wk_protype
 
+
+	
 		! Wälzkörperprofil: wk_prorad(i) und wk_dpro_deta(i)
 		call mod_ProfileDetect_mp_ProfileDetect(iflag, wk_protype, no_slce_LB,wk_rad,wk_l, wk_pro_rad,
-     &                          distnce(1:no_slce_LB), wk_prorad(1:no_slce_LB),      
+     &                          distnce, wk_prorad(1:no_slce_LB),      
      &							wk_pro_ap, wk_pro_cp, wk_pro_dp, wk_pro_kp, wk_pro_rk,           
-     &							wk_dpro_deta(1:no_slce_LB))
+     &							wk_dpro_deta)
 	
 	endif
 
     !##check point 
 	!!!Test, ob Ausgabe von der Funktion richtig gerechnet wurden. 
-	open(1047,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_prorad.out')
-	write(1047,*) wk_prorad(:)                                                                    !!!soll ähnlich so groß wie rad_wk
+	! open(1053,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_prorad.out')
+	! write(1053,*) wk_prorad(:)      !!!soll ähnlich so groß wie rad_wk
 
-	open(1048,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_dpro_deta.out')
-	write(1048,*) wk_dpro_deta(:)        
+	! open(1054,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_dpro_deta.out')
+	! write(1054,*) wk_dpro_deta(:)        
 	 
 
 !---------------------------------------------------------------------------------------------
@@ -1490,7 +1499,7 @@ C ----------------------------------------------------------------------
 			rho2x_WKAR               = -1.0d0/rad_AR
 	
 			! Für Hertz-Kontaktmodell in Kombination mit Wälzkörperkreisprofil
-			if(ctctype_LB==4 .and. wk_protype==2) then
+			if(ctctype_LB==4 .and. wk_protype==2) then                !aus Subvar soll ctctype = 3,und wk_protype=4
 				rho1y_WKAR = 1.0d0/wk_pro_rad
 				rho2y_WKAR = 1.0d0/prorad_AR
 			! Näherung: Linienkontakt mit nicht profilierten Kontaktpartnern
@@ -1510,8 +1519,7 @@ C ----------------------------------------------------------------------
 			R_dash_WKAR(1:no_slce_LB) = 1.0d0/sum_rho_WKAR(1:no_slce_LB)
     
 	!##check point##!
-	open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\R_dash_WKAR.out')
-	write(1049,*) R_dash_WKAR(:)  
+	 
 	
 		! WK-IR-Kontakt
 		elseif(ctloc == 2) then
@@ -1549,8 +1557,7 @@ C ----------------------------------------------------------------------
 	endif
 
     !##check point
-	open(1050,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\R_dash_WKIR.out')
-	write(1050,*) R_dash_WKIR(:)  
+	 
 	
 		
     
