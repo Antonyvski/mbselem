@@ -423,7 +423,7 @@ C ----------------------------------------------------------------------
 		 par_name(82) = 'no_gauss_LB                   '  ;  par_type(82) = knr_double     	;  par_unit(82) = knodef
 		 par_name(83) = 'cf_pnts_LB                    '  ;  par_type(83) = knr_double     	;  par_unit(83) = knodef
 		 par_name(84) = 'cf_p_max_LB                   '  ;  par_type(84) = knr_double      ;  par_unit(84) = knodef
-		 par_name(85) = 'no_slce_LB                    '  ;  par_type(85) = knr_double      ;  par_unit(84) = knodef
+		 par_name(85) = 'no_slce                       '  ;  par_type(85) = knr_double      ;  par_unit(84) = knodef
          !par_name(86) = 'mid_slce                      '  ;  par_type(86) = knr_double      ;  par_unit(86) = knodef
 		 
 
@@ -772,13 +772,13 @@ C ----------------------------------------------------------------------
 	  !----------------------------------------------------------------------------------
 	  ! Allgemeine Daten
 	  real(8),parameter           :: ZERO = 0.0d0, ONE = 1.0d0, PI = acos(-1.0d0), TWOPI = 2.0d0*PI, MPREC = epsilon(1.0d0), TOL = 1.0d-12, PREC = 1.0d-8
-	  integer,parameter           :: n_min=15                 ! Min. Scheibenanzahl (für curve-fit)
-	  integer,parameter           :: n_max=201                ! Max. Scheibenanzahl
-	  integer,parameter           :: no_gauss_max=25          ! Max. Anzahl an Stützpunkten für
+	 ! integer,parameter           :: n_min=15                 ! Min. Scheibenanzahl (für curve-fit)
+	  integer,parameter           :: no_slce = 51              ! Max. Scheibenanzahl
+	 !integer,parameter           :: no_gauss_max=25          ! Max. Anzahl an Stützpunkten für
 															  ! Gauss-Legendre-Quadratur
 	  integer,parameter           :: wk_max=101               ! Max. WK-Anzahl
 
-	  integer                     :: beartype, no_bear, no_wk, no_slce, no_gauss, mid_slce, mid_gauss
+	  integer                     :: beartype, no_bear, no_wk, no_gauss, mid_slce, mid_gauss
 	  integer                     :: no_cellx, no_celly
 	  integer                     :: contactmod
 	  integer                     :: ctctype_LB
@@ -861,7 +861,7 @@ C ----------------------------------------------------------------------
 	  !----------------------------------------------------------------------------------
 	  ! Materialeigenschaften
 
-	  real(kind=8)                :: ar_youngs, ar_poisson, ir_youngs, ir_poisson, wk_youngs, wk_poisson, kf_youngs, kf_poisson
+	  real(kind=8)                :: kf_youngs, kf_poisson
 	  real(kind=8)                :: mat_c_WKAR, mat_c_WKIR
 	  real(kind=8)                :: E_dash_WKAR,E_dash_WKIR
 
@@ -924,7 +924,8 @@ C ----------------------------------------------------------------------
 	 
 	  ! ##### Vektor mit Parametern für Scheibenmodell, Gauss-Integration #####
       INTEGER, PARAMETER	:: no_slce_Bord = 2
-	  INTEGER, PARAMETER    :: no_slce_LB   = 31    !new 
+	 
+	                            
 	  ! ##### Variablen Reibung #####
       real(kind=8) 		:: vtang_rel_brd(no_slce_Bord,3), vtang_sum_brd(no_slce_Bord,3)
       INTEGER			:: race_f_mod_brd
@@ -940,10 +941,10 @@ C ----------------------------------------------------------------------
       real(kind=8) 		:: temp1_brd, temp1a_brd
       real(kind=8) 		:: temp33_brd(3,3)
 	  real(kind=8)      :: mat_WK, mat_AR, mat_IR
-	  real(kind=8)      :: rho1x_WKAR(n_max), rho2x_WKAR, rho1y_WKAR, rho2y_WKAR
-	  real(kind=8)      :: rhox_WKAR(n_max), rhoy_WKAR
-      real(kind=8)      :: rho1x_WKIR(n_max), rho2x_WKIR, rho1y_WKIR, rho2y_WKIR
-      real(kind=8)      :: rhox_WKIR(n_max), rhoy_WKIR   
+	  real(kind=8)      :: rho1x_WKAR(no_slce), rho2x_WKAR, rho1y_WKAR, rho2y_WKAR
+	  real(kind=8)      :: rhox_WKAR(no_slce), rhoy_WKAR
+      real(kind=8)      :: rho1x_WKIR(no_slce), rho2x_WKIR, rho1y_WKIR, rho2y_WKIR
+      real(kind=8)      :: rhox_WKIR(no_slce), rhoy_WKIR   
 
 	  ! ##### Auslesefelder aus Simpack #####
       real(kind=8) 		:: temptdisp_brd
@@ -1016,7 +1017,7 @@ C ----------------------------------------------------------------------
 		
 		!real(kind=8)                :: rad_AR, rad_IR
 		real(kind=8),allocatable    :: p_slce(:), b_slce(:), h0(:)
-		real(kind=8)                :: ctpoint_glob(int(no_slce_LB),3)                !new from ADAMS
+		real(kind=8)                :: ctpoint_glob(int(no_slce),3)                !new from ADAMS
 	 !------------------------------------------------------------------
 	 !notwendige Variablen zur automatisierten Ausgabe
 	 !------------------------------------------------------------------
@@ -1124,15 +1125,15 @@ C ----------------------------------------------------------------------
 
 	  prorad_IR = (par(11)) 
 	  rad_IR = (par(12))                   !rad-IR heißt eigentlich "lfb_rad_IR" 
-	  IR_breite= (par(13)) 
+	  IR_breite = (par(13)) 
 
 	  !AR_MANTEL_DRM=(par(85))
 	 
 	  !für Modul calc_wkpro-----------------------------------------------
 
 	  	
-	  wk_l=			(par(14))
-	  wk_rad=		(par(15))		
+	  wk_l =		(par(14))
+	  wk_rad  =		(par(15))		
 	  				  
 	  !lb_winkel=	(par())			
 	 					
@@ -1148,14 +1149,14 @@ C ----------------------------------------------------------------------
 	  !!! rad_AR=(par(14))/2.0d0+((par(15))/2.0d0)*cosd(par(17))	
 
 	  !für Modul calc_data-----------------------------------------------	  
-	  ir_youngs=	(par(23))   !IR_E
-	  ir_poisson=	(par(24))   !IR_V
+		IR_E = (par(23))   !   ir_youngs
+	  	IR_V = (par(24))   !   ir_poisson
 	  
-	  ar_youngs=	(par(25))   !AR_E
-	  ar_poisson=	(par(26))   !AR_V
+	  	AR_E = (par(25))   !   ar_youngs
+		AR_V = (par(26))   !   ar_poisson
   
-	  wk_youngs=	(par(27))   !WK_E
-	  wk_poisson=	(par(28))   !WK_V
+	  	WK_E = (par(27))   !   wk_youngs
+	  	WK_V = (par(28))   !   wk_poisson
 	  
 
 	  
@@ -1245,7 +1246,7 @@ C ----------------------------------------------------------------------
 	 no_gauss		= int(par(82))		! Gauss-Integration
 	 cf_pnts		= int(par(83))
 	 cf_p_max		= (par(84)) 
-	 
+	 !no_slce        = int(par(85))      !Scheibemodell Scheiben Anzahl
 	
 	!PWI !eventuell später nochmals anpassen
 	 !ar_dicke		=	(AR_MANTEL_DRM/2.0d0-(par(14))/2.0d0-(par(15))/2.0d0)*10.0d0	
@@ -1269,9 +1270,10 @@ C ----------------------------------------------------------------------
 		!	id_lb			= int(par(90))
 		endif
 
-		iflag = 1
+		iflag = .true.
+
 	 
-	 
+
 ! ----------------------------------------------------------------------
 !                           Execution
 ! ----------------------------------------------------------------------
@@ -1431,9 +1433,14 @@ C ----------------------------------------------------------------------
 	! write(1046,*) matTr_gr_wk
 
 
-	if (not(allocated(distnce))) allocate(distnce(no_slce_LB)) !##25,09,2021 hinzufügt
-	 
+	if (not(allocated(distnce))) allocate(distnce(no_slce))        !##25,09,2021 hinzufügt
+ 
+	if (not(allocated(wk_prorad))) allocate(wk_prorad(no_slce))       !##19,10,2021 hinzufügt um PD zu ermöglichen
+      
+	if (not(allocated(wk_dpro_deta))) allocate(wk_dpro_deta(no_slce))
+ 	 
 	
+
 !---------------------------------------------------------------------------------------------
 !-------------------------------------- Wälzkörperprofil -------------------------------------
 !---------------------------------------------------------------------------------------------
@@ -1441,42 +1448,31 @@ C ----------------------------------------------------------------------
 	if(iflag) then
 	
 		! Breite einer Scheibe
-		slce_wdth = wk_l/no_slce_LB
+		slce_wdth = wk_l/no_slce
         
-		open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\slce_wdth.out')
-		write(1049,*)slce_wdth
+		! open(1049,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\slce_wdth.out')
+		! write(1049,*)slce_wdth
 
 		! Abstand der Scheibe i vom Wälzkörpermittelpunkt
-		do i=1,no_slce_LB
+		do i=1,no_slce
 			distnce(i)=slce_wdth*(i-0.5)-wk_l/2
 		enddo
-
-		open(1050,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\distnce_ufroce.out')
-		write(1050,*)distnce(:)
-        
-		open(1051,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_pro_rk_ufroce.out')
-		write(1051,*)wk_pro_rk
-
-        open(1052,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_protype_ufroce.out')
-		write(1052,*)wk_protype
-
-
 	
 		! Wälzkörperprofil: wk_prorad(i) und wk_dpro_deta(i)
-		call mod_ProfileDetect_mp_ProfileDetect(iflag, wk_protype, no_slce_LB,wk_rad,wk_l, wk_pro_rad,
-     &                          distnce, wk_prorad(1:no_slce_LB),      
+		call mod_ProfileDetect_mp_ProfileDetect(iflag, wk_protype, no_slce,wk_rad,wk_l, wk_pro_rad,
+     &                          distnce, wk_prorad,      
      &							wk_pro_ap, wk_pro_cp, wk_pro_dp, wk_pro_kp, wk_pro_rk,           
      &							wk_dpro_deta)
-	
+
 	endif
 
     !##check point 
 	!!!Test, ob Ausgabe von der Funktion richtig gerechnet wurden. 
-	! open(1053,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_prorad.out')
-	! write(1053,*) wk_prorad(:)      !!!soll ähnlich so groß wie rad_wk
+	open(1053,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_prorad.out')
+	write(1053,*) wk_prorad(:)      !!!soll ähnlich so groß wie rad_wk
 
-	! open(1054,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_dpro_deta.out')
-	! write(1054,*) wk_dpro_deta(:)        
+	open(1054,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\wk_dpro_deta.out')
+	write(1054,*) wk_dpro_deta(:)        
 	 
 
 !---------------------------------------------------------------------------------------------
@@ -1493,11 +1489,22 @@ C ----------------------------------------------------------------------
 			mat_AR      = (1.0d0-AR_v**2.0d0)/AR_E
 			mat_c_WKAR  = (mat_WK+mat_AR)/2.0d0
 			E_dash_WKAR = 1.0d0/mat_c_WKAR
-	
+
+			! open(1055,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\WK_AR_MATERIALPARAMETERS.out')
+			! write(1055,*)WK_v, WK_E, AR_v, AR_E    !!!geprüft
+        
+			open(1056,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\WK_AR_Reduzierter_Elastizitätsmodul.out')
+			write(1056,*)mat_WK, mat_Ar, mat_c_WKAR, E_dash_WKAR 	
+
 			! Reduzierter Radius
-			rho1x_WKAR(1:no_slce_LB) = 1.0d0/ wk_prorad(1:no_slce_LB)
+			rho1x_WKAR(1:no_slce) = 1.0d0/wk_prorad(1:no_slce)  !laut 943, beträgt no_slce =201, was ist aber die richitge ?
 			rho2x_WKAR               = -1.0d0/rad_AR
-	
+			
+			open(1058,file='C:\Users\Zewang\Documents\BA\CODE\Routine_PeRoLa\AusgabePRL\rho1x_WKAR.out')
+			write(1058,*) rho1x_WKAR(:)
+
+
+
 			! Für Hertz-Kontaktmodell in Kombination mit Wälzkörperkreisprofil
 			if(ctctype_LB==4 .and. wk_protype==2) then                !aus Subvar soll ctctype = 3,und wk_protype=4
 				rho1y_WKAR = 1.0d0/wk_pro_rad
@@ -1508,15 +1515,15 @@ C ----------------------------------------------------------------------
 				rho2y_WKAR = 0.0d0
 			endif
 	
-			rhox_WKAR(1:no_slce_LB) = rho1x_WKAR(1:no_slce_LB)+rho2x_WKAR
+			rhox_WKAR(1:no_slce) = rho1x_WKAR(1:no_slce)+rho2x_WKAR
 			rhoy_WKAR               = rho1y_WKAR+rho2y_WKAR
 	
 			if(abs(rad_AR)>0.0d0) then
-				sum_rho_WKAR(1:no_slce_LB) = rhox_WKAR(1:no_slce_LB)+rhoy_WKAR
+				sum_rho_WKAR(1:no_slce) = rhox_WKAR(1:no_slce)+rhoy_WKAR
 			else
-				sum_rho_WKAR(1:no_slce_LB) = rho1x_WKAR(1:no_slce_LB)           ! Wälzkörper-Ebene Kontakt
+				sum_rho_WKAR(1:no_slce) = rho1x_WKAR(1:no_slce)           ! Wälzkörper-Ebene Kontakt
 			endif
-			R_dash_WKAR(1:no_slce_LB) = 1.0d0/sum_rho_WKAR(1:no_slce_LB)
+			R_dash_WKAR(1:no_slce) = 1.0d0/sum_rho_WKAR(1:no_slce)
     
 	!##check point##!
 	 
@@ -1531,7 +1538,7 @@ C ----------------------------------------------------------------------
 			E_dash_WKIR = 1.0d0/mat_c_WKIR
 	
 			! Reduzierter Radius (Näherung: Linienkontakt mit nicht profilierten Kontaktpartnern)
-			rho1x_WKIR(1:no_slce_LB) = 1.0d0/ wk_prorad(1:no_slce_LB)
+			rho1x_WKIR(1:no_slce) = 1.0d0/ wk_prorad(1:no_slce)
 			rho2x_WKIR               = 1.0d0/rad_IR
 	
 			! Für Hertz-Kontaktmodell in Kombination mit Wälzkörperkreisprofil
@@ -1543,15 +1550,15 @@ C ----------------------------------------------------------------------
 				rho2y_WKIR  = 0.0d0
 			endif
 	
-			rhox_WKIR(1:no_slce_LB) = rho1x_WKIR(1:no_slce_LB)+rho2x_WKIR
+			rhox_WKIR(1:no_slce) = rho1x_WKIR(1:no_slce)+rho2x_WKIR
 			rhoy_WKIR               = rho1y_WKIR+rho2y_WKIR
 	
 			if(abs(rad_IR)>0.0d0) then
-				sum_rho_WKIR(1:no_slce_LB) = rhox_WKIR(1:no_slce_LB)+rhoy_WKIR
+				sum_rho_WKIR(1:no_slce) = rhox_WKIR(1:no_slce)+rhoy_WKIR
 			else
-				sum_rho_WKIR(1:no_slce_LB) = rho1x_WKIR(1:no_slce_LB)           ! Wälzkörper-Ebene Kontakt
+				sum_rho_WKIR(1:no_slce) = rho1x_WKIR(1:no_slce)           ! Wälzkörper-Ebene Kontakt
 			endif
-			R_dash_WKIR(1:no_slce_LB) = 1.0d0/sum_rho_WKIR(1:no_slce_LB)
+			R_dash_WKIR(1:no_slce) = 1.0d0/sum_rho_WKIR(1:no_slce)
 	
 		endif
 	endif
@@ -1583,8 +1590,7 @@ C ----------------------------------------------------------------------
       !write(1,'(1001f18.8)') AR_LFB_delta_ax_flex
     
       AR_LFB_delta_rad_flex = 0.0d0
-      AR_LFB_delta_ax_flex  = 0.0d0
- 
+      AR_LFB_delta_ax_flex  = 0.0d0   
 
 !---------------------------------------------------------------------------------------------
 !-------------------------------------- Kontakterkennung -------------------------------------
@@ -1597,12 +1603,13 @@ C ----------------------------------------------------------------------
 		!call KippSchr(time, id, iflag, int(par(3)),int(par(1)),int(par(5)),tdisp_wk_ar_gr ,			
         ! &							beta_schr, gamma_kipp)
 	
-	      call mod_WK_LB_Kontakt_AR_mp_WK_LB_Kontakt_AR(id, time, ctloc, no_slce_LB,							 
-     &					tdisp_wk_ar_gr, tdisp_wk_wka_gr, distnce(1:no_slce_LB),					 
-     &						prorad_AR, wk_prorad(1:no_slce_LB), wk_pro_rad, AR_breite,	 
-     &						    AR_LFB_delta_rad_flex, AR_LFB_delta_ax_flex,        
+	      call mod_WK_LB_Kontakt_AR_mp_WK_LB_Kontakt_AR(id, time, ctloc, no_slce,							 
+     &					tdisp_wk_ar_gr, tdisp_wk_wka_gr, distnce ,					 
+     &						prorad_AR, wk_prorad , wk_pro_rad, AR_breite,	 
+     &						    AR_LFB_delta_rad_flex, AR_LFB_delta_ax_flex,    !!!wir haben daoben AR_LFB_delta_rad_flex und AR_LFB_delta_ax_flex als NULL eingestzt.
      &							penetrtn, ctnorm, ctpoint, ctpoint_glob)             
 	
+
 	! Wälzkörper - Innenring
 	  elseif(ctloc == 2) then
 		! Berechung des Kipp-/Schräglaufwinkels des WK zur LBKon
@@ -1610,11 +1617,16 @@ C ----------------------------------------------------------------------
         !&					beta_schr, gamma_kipp)
 	
 	      call mod_WK_LB_Kontakt_IR_mp_WK_LB_Kontakt_IR(id, iflag, dflag,time,
-     &	           ctloc, no_slce_LB, angles_wk_ir, angles_gr_wk, tdisp_wk_ir_ir,	
-     &					tdisp_wk_ir_gr, tdisp_wk_wka_gr, tdisp_wk_wka_ir, distnce(1:no_slce_LB), rad_IR,                        
-     &						prorad_IR,  wk_prorad(1:no_slce_LB), wk_pro_rad, wk_dpro_deta(1:no_slce_LB),          
+     &	           ctloc, no_slce, angles_wk_ir, angles_gr_wk, tdisp_wk_ir_ir,	
+     &					tdisp_wk_ir_gr, tdisp_wk_wka_gr, tdisp_wk_wka_ir, distnce , rad_IR,                        
+     &						prorad_IR,  wk_prorad , wk_pro_rad, wk_dpro_deta ,          
      &							penetrtn, ctnorm, ctpoint, ctpoint_glob)
       endif
+
+
+
+
+
 
 
 C ----------------------------------------------------------------------
@@ -1632,7 +1644,7 @@ C ----------------------------------------------------------------------
          ov(1:ov_dim)        = 0.0d0
          stdynd(1:stdyn_dim) = 0.0d0
 		 
-		 !W?lk?rper / Laufbahn - Ausgabe
+		 !Wälzkörper / Laufbahn - Ausgabe
 		 if (ctloc == 1 .OR. ctloc == 2) then 		!Wälzkörper / Laufbahn Ausgabe
 		 
 			 force(1) = res(1)
